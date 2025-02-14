@@ -88,22 +88,30 @@
     </form>
 </body>
     <script>
-        const script_do_google = 'https://script.google.com/macros/s/AKfycbxypFVRkVlG_zK0CNHh_yW0uldjiyQALI5IexIdtXlzYkiTQ3Ln-vGigUdxk6EKkzY6/exec';
-        const dados_do_formulario = document.forms['form'];
-
-        dados_do_formulario.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            fetch(script_do_google, { method: 'POST', body: new FormData(dados_do_formulario) })
-                .then(response => {
-                    // Se os dados forem gravados corretamente, será enviada uma mensagem de sucesso
-                    alert('Dados enviados com sucesso!', response);
-                    dados_do_formulario.reset(); 
-                })
-                .catch(error => {
-                    // Se houver erro no envio, a menssagem abaixo será exibida
-                    console.error('Erro no envio dos dados!', error);
-                });
-        });
+      const script_do_google = 'https://script.google.com/macros/s/AKfycbxypFVRkVlG_zK0CNHh_yW0uldjiyQALI5IexIdtXlzYkiTQ3Ln-vGigUdxk6EKkzY6/exec';
+      const dados_do_formulario = document.forms['form'];
+    
+      dados_do_formulario.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const botao = document.getElementById('submit');
+        botao.disabled = true; // Bloqueia o botão
+    
+        fetch(script_do_google, { method: 'POST', body: new FormData(dados_do_formulario) })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === 'sucesso') {
+              alert('Dados enviados com sucesso!');
+              dados_do_formulario.reset();
+            } else {
+              alert('Erro: ' + data.mensagem);
+            }
+          })
+          .catch(error => {
+            console.error('Erro no envio dos dados!', error);
+          })
+          .finally(() => {
+            setTimeout(() => botao.disabled = false, 3000); // Desbloqueia após 3s
+          });
+      });
     </script>
 </html>
